@@ -1,6 +1,6 @@
 # CineTrack 🎬
 
-Projet Vue.js --> App de watchlist de films — on cherche des films, on les ajoute à sa liste, on note ceux qu'on a vus. Les données viennent de l'API TMDB (gratuite).
+Projet Vue.js — App de watchlist de films — on cherche des films, on les ajoute à sa liste, on note ceux qu'on a vus. Les données viennent de l'API OMDb (gratuite).
 
 Groupe : Iness · Mariam · Théa · Ethan
 
@@ -10,7 +10,7 @@ Groupe : Iness · Mariam · Théa · Ethan
 
 Un Letterboxd simplifié. T'ajoutes des films à ta liste, tu marques ceux que t'as vus, tu laisses une note et un commentaire. La watchlist est sauvegardée dans le localStorage donc elle disparaît pas si tu fermes le navigateur.
 
-On a aussi une page de recherche avec des filtres, une fiche détaillée par film avec le casting et la bande-annonce, et une page profil avec quelques stats (films vus, note moyenne, genre préféré).
+On a aussi une page de recherche avec des filtres, une fiche détaillée par film, et une page profil avec quelques stats (films vus, note moyenne, genre préféré).
 
 ---
 
@@ -22,14 +22,24 @@ Vue 3 + Composition API, Vue Router 4, Pinia (avec persistance localStorage), Vi
 
 ## Lancer le projet
 
-Il te faut Node.js v18+ et une clé API TMDB.
+### 1. Récupérer une clé API OMDb
 
-**Récupérer une clé TMDB :**
-Crée un compte sur [themoviedb.org](https://www.themoviedb.org), va dans Paramètres → API, et copie le token d'accès en lecture (le long, pas la clé v3).
+C'est gratuit et ça prend 2 minutes.
+
+1. Va sur [omdbapi.com/apikey.aspx](https://www.omdbapi.com/apikey.aspx)
+2. Choisis le plan **FREE** (1000 requêtes/jour, c'est largement suffisant)
+3. Entre ton adresse mail et valide
+4. Tu reçois un mail de `omdbapi.com` avec le sujet **"API Key"** — vérifie les spams si tu vois rien
+5. Dans le mail, clique sur le **lien d'activation** (sans ça la clé marchera pas)
+6. Ta clé ressemble à ça : `1f4f4f3b` (8 caractères)
+
+### 2. Cloner et installer
+
+````bash
 
 ```bash
-git clone https://github.com/VOTRE_USERNAME/cinetrack.git
-cd cinetrack
+git clone https://github.com/inessben/projet-vuejs.git
+cd projet-vue
 npm install
 #ou
 npm install -D vite @vitejs/plugin-vue eslint eslint-plugin-vue
@@ -39,22 +49,44 @@ npm run dev
 
 npm run lint      # corrige les erreurs ESLint
 npm run format    # formate tout le code avec Prettier
-```
-
-Crée un fichier `.env` à la racine :
+````
 
 ```
-VITE_TMDB_API_KEY=ton_token_ici
+
+### 3. Créer ton fichier .env
+
+Crée un fichier `.env` à la racine du projet (là où y'a le `package.json`) et colle ça dedans :
+
 ```
 
-> Le `.env` est gitignore — chacun crée le sien avec sa propre clé, on le commit jamais.
+VITE_OMDB_API_KEY=ta_clé_ici
+
+````
+
+
+> ⚠️ Le `.env` est dans le `.gitignore` — chacun crée le sien avec sa propre clé. On le commit jamais, on l'envoie pas sur Discord non plus.
+
+### 4. Lancer
 
 ```bash
 npm run dev
-# http://localhost:5173
+# → http://localhost:5173
+````
+
+Pour vérifier que ta clé est bien chargée, ouvre la console du navigateur (`F12`) et tape :
+
+```js
+import.meta.env.VITE_OMDB_API_KEY;
 ```
 
-Autres commandes : `npm run build` / `npm run preview` / `npm run lint` / `npm run format`
+Si ça retourne ta clé c'est bon. Si ça retourne `undefined`, redémarre le serveur avec `Ctrl+C` puis `npm run dev`.
+
+### Autres commandes
+
+```bash
+npm run build     # prod
+npm run preview   # tester le build
+```
 
 ---
 
@@ -83,7 +115,7 @@ On a réparti pour que chacun touche à toutes les notions Vue du cours. Personn
 
 `SearchBar.vue`, `FilterPanel.vue`, `GenreBadge.vue`, `HomeView.vue` et `SearchView.vue`.
 
-Côté notions Vue : `defineModel()` sur la SearchBar, watcher deep sur les filtres (pour relancer la recherche automatiquement quand un filtre change), le composable `useDebounce` pour pas flood l'API à chaque lettre, et les appels API trending/genres/search.
+Côté notions Vue : `defineModel()` sur la SearchBar, watcher deep sur les filtres (pour relancer la recherche automatiquement quand un filtre change), le composable `useDebounce` pour pas flood l'API à chaque lettre, et les appels API search.
 
 ---
 
@@ -91,7 +123,7 @@ Côté notions Vue : `defineModel()` sur la SearchBar, watcher deep sur les filt
 
 `MovieCard.vue`, `HeroSection.vue`, `CastCarousel.vue`, `MovieDetailView.vue` et `PersonDetailView.vue`.
 
-Côté notions Vue : slots nommés sur HeroSection (`#title`, `#actions`, `#meta`), scoped slot sur CastCarousel, le composable `useMovieFetch` qui watch `route.params.id` pour recharger quand on navigue entre deux films, et les appels API détails/crédits/vidéos/similaires/personne.
+Côté notions Vue : slots nommés sur HeroSection (`#title`, `#actions`, `#meta`), scoped slot sur CastCarousel, le composable `useMovieFetch` qui watch `route.params.id` pour recharger quand on navigue entre deux films, et les appels API détails film.
 
 ---
 
@@ -124,12 +156,10 @@ Côté notions Vue : lazy loading des routes, computed `watchlistStats` dans Pro
 /*            → 404
 ```
 
----
-
 ## Planning
 
-Sprint 1 (25-29 mars) — setup, home avec vrais films, watchlist de base  
-Sprint 2 (30 mars - 6 avril) — toutes les pages, tous les critères du sujet  
+Sprint 1 (25-29 mars) — setup, home avec vrais films, watchlist de base
+Sprint 2 (30 mars - 6 avril) — toutes les pages, tous les critères du sujet
 Sprint 3 (7-12 avril) — polish, build, zip MyGES
 
 **Deadline : 13 avril 2026**
@@ -138,7 +168,7 @@ Sprint 3 (7-12 avril) — polish, build, zip MyGES
 
 ## Ce qu'on a pas fait
 
-- Auth TMDB (pas de vrai compte utilisateur)
+- Auth (pas de vrai compte utilisateur)
 - Tests unitaires
 - PWA / mode offline
 
