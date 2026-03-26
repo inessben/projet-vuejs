@@ -6,3 +6,6 @@ npm install -D vite @vitejs/plugin-vue eslint eslint-plugin-vue
 
 
 npm run dev
+
+npm run lint      # corrige les erreurs ESLint
+npm run format    # formate tout le code avec Prettier
