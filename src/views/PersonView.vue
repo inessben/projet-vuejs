@@ -1,0 +1,11 @@
+<script setup>
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
+</script>
+
+<template>
+  <h1>Tu es sur la page Personne {{route.params.id}} !</h1>
+</template>
+
+<style scoped></style>
