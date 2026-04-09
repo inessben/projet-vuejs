@@ -30,11 +30,11 @@ const MovieReviewForm = defineAsyncComponent(() => import('@/views/MovieReviewFo
 </script>
 
 <template>
-  <section>
-    <p v-if="chargement">Chargement...</p>
-    <p v-else-if="erreur">Erreur : {{ erreur }}</p>
+  <section class="page movie-view">
+    <p v-if="chargement" class="panel state-box">Chargement...</p>
+    <p v-else-if="erreur" class="panel state-box state-error">Erreur : {{ erreur }}</p>
 
-    <div v-else-if="film">
+    <div v-else-if="film" class="movie-layout">
       <HeroSection :film="film">
         <template #title>
           <h1>{{ film.Title }}</h1>
@@ -49,15 +49,49 @@ const MovieReviewForm = defineAsyncComponent(() => import('@/views/MovieReviewFo
         </template>
       </HeroSection>
 
-      <p>{{ film.Plot }}</p>
+      <article class="panel story-block">
+        <h2 class="section-title">Synopsis</h2>
+        <p class="text-muted">{{ film.Plot }}</p>
+      </article>
+
       <CastCarousel :acteurs="film.Actors" />
 
-      <button v-if="estDansLaListe" @click="showForm = !showForm">
+      <button v-if="estDansLaListe" class="btn btn-secondary" @click="showForm = !showForm">
         {{ showForm ? 'Fermer le formulaire' : 'Laisser un avis' }}
       </button>
-      <p v-else>Ajoute d'abord ce film a la watchlist pour laisser un avis.</p>
+      <p v-else class="text-muted">Ajoute d'abord ce film a la watchlist pour laisser un avis.</p>
 
       <MovieReviewForm v-if="showForm" :key="film.imdbID" :film-id="film.imdbID" />
     </div>
   </section>
 </template>
+
+<style scoped>
+.movie-view {
+  display: grid;
+  gap: 18px;
+}
+
+.movie-layout {
+  display: grid;
+  gap: 18px;
+}
+
+.state-box {
+  margin: 0;
+  padding: 16px;
+}
+
+.state-error {
+  color: var(--danger);
+}
+
+.story-block {
+  padding: 18px;
+}
+
+.story-block p {
+  margin: 0;
+  line-height: 1.7;
+}
+</style>

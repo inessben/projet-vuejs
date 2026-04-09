@@ -55,10 +55,15 @@ function resetSurvol() {
   padding: 0;
   cursor: pointer;
   line-height: 1;
+  transition: transform 140ms ease;
 }
 
 .star-btn.readonly {
   cursor: default;
+}
+
+.star-btn:hover:not(.readonly) {
+  transform: translateY(-1px);
 }
 
 .star-icon::before {
