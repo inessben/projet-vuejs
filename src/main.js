@@ -11,5 +11,5 @@ pinia.use(piniaPluginPersistedstate)
 
 app.use(pinia)
 app.use(router)
-app.mount('#app')
 app.directive('lazy-image', vLazyImage)
+app.mount('#app')

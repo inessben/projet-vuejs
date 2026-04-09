@@ -1,13 +1,32 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, defineAsyncComponent, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useMovieFetch } from '@/composables/useMovieFetch'
+import { useWatchlistStore } from '@/stores/watchlist'
 import HeroSection from '@/components/HeroSection.vue'
 import CastCarousel from '@/components/CastCarousel.vue'
+import WatchlistButton from '@/components/WatchlistButton.vue'
 
 const route = useRoute()
 const movieId = computed(() => route.params.id)
 const { film, chargement, erreur } = useMovieFetch(movieId)
+
+const showForm = ref(false)
+const watchlistStore = useWatchlistStore()
+
+const estDansLaListe = computed(() =>
+  film.value ? watchlistStore.estDansLaListe(film.value.imdbID) : false
+)
+
+watch(movieId, () => {
+  showForm.value = false
+})
+
+watch(estDansLaListe, (dansLaListe) => {
+  if (!dansLaListe) showForm.value = false
+})
+
+const MovieReviewForm = defineAsyncComponent(() => import('@/views/MovieReviewForm.vue'))
 </script>
 
 <template>
@@ -22,19 +41,23 @@ const { film, chargement, erreur } = useMovieFetch(movieId)
         </template>
 
         <template #meta>
-          <p>{{ film.Year }} · {{ film.Runtime }} · {{ film.imdbRating }}/10</p>
+          <p>{{ film.Year }} - {{ film.Runtime }} - {{ film.imdbRating }}/10</p>
         </template>
 
         <template #actions>
-          <p>Bouton watchlist à brancher quand WatchlistButton sera prêt.</p>
+          <WatchlistButton :film="film" />
         </template>
       </HeroSection>
 
       <p>{{ film.Plot }}</p>
-
       <CastCarousel :acteurs="film.Actors" />
+
+      <button v-if="estDansLaListe" @click="showForm = !showForm">
+        {{ showForm ? 'Fermer le formulaire' : 'Laisser un avis' }}
+      </button>
+      <p v-else>Ajoute d'abord ce film a la watchlist pour laisser un avis.</p>
+
+      <MovieReviewForm v-if="showForm" :key="film.imdbID" :film-id="film.imdbID" />
     </div>
   </section>
 </template>
-
-<style scoped></style>

@@ -11,6 +11,8 @@ export function useMovieFetch(idRef, fetcher = getMovieById) {
     async (id) => {
       if (!id) {
         film.value = null
+        erreur.value = null
+        chargement.value = false
         return
       }
 

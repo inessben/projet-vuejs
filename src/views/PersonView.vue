@@ -15,12 +15,18 @@ const { film: personne, chargement, erreur } = useMovieFetch(personId, getPerson
     <p v-else-if="erreur">Erreur : {{ erreur }}</p>
 
     <div v-else-if="personne">
-      <h1>{{ personne.Title || 'Détail personne' }}</h1>
+      <h1>{{ personne.Title || 'Detail personne' }}</h1>
+      <img
+        v-if="personne.Poster && personne.Poster !== 'N/A'"
+        :src="personne.Poster"
+        :alt="personne.Title"
+        style="max-width: 240px"
+      />
       <p><strong>Type:</strong> {{ personne.Type }}</p>
-      <p><strong>Année:</strong> {{ personne.Year }}</p>
+      <p><strong>Annee:</strong> {{ personne.Year }}</p>
+      <p><strong>Acteurs:</strong> {{ personne.Actors }}</p>
+      <p><strong>Genre:</strong> {{ personne.Genre }}</p>
       <p><strong>IMDb ID:</strong> {{ personne.imdbID }}</p>
     </div>
   </section>
 </template>
-
-<style scoped></style>
