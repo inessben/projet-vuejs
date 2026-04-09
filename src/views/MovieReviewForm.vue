@@ -34,7 +34,7 @@ function enregistrer() {
 
   if (!ok) {
     messageSucces.value = ''
-    showToast('Film introuvable dans la watchlist')
+    showToast('Film introuvable dans la watchlist', 'error')
     return
   }
 
@@ -44,14 +44,57 @@ function enregistrer() {
 </script>
 
 <template>
-  <form @submit.prevent="enregistrer">
+  <form class="panel review-form" @submit.prevent="enregistrer">
+    <h3 class="section-title review-title">Votre avis</h3>
+
+    <label class="label">Note</label>
     <RatingStars v-model="note" />
-    <p v-if="erreurNote">{{ erreurNote }}</p>
+    <p v-if="erreurNote" class="msg msg-error">{{ erreurNote }}</p>
 
-    <textarea v-model="commentaire" />
-    <p v-if="erreurCommentaire">{{ erreurCommentaire }}</p>
+    <label class="label" for="review-comment">Commentaire</label>
+    <textarea
+      id="review-comment"
+      v-model="commentaire"
+      class="textarea"
+      placeholder="Partage ton ressenti sur le film..."
+    />
+    <p v-if="erreurCommentaire" class="msg msg-error">{{ erreurCommentaire }}</p>
 
-    <button type="submit" :disabled="!valide">Enregistrer</button>
-    <p v-if="messageSucces">{{ messageSucces }}</p>
+    <button type="submit" class="btn btn-primary" :disabled="!valide">Enregistrer</button>
+    <p v-if="messageSucces" class="msg msg-success">{{ messageSucces }}</p>
   </form>
 </template>
+
+<style scoped>
+.review-form {
+  margin-top: 16px;
+  padding: 18px;
+  display: grid;
+  gap: 8px;
+}
+
+.review-title {
+  margin-bottom: 4px;
+  font-size: 1.3rem;
+}
+
+.label {
+  color: var(--text-700);
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.msg {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.msg-error {
+  color: var(--danger);
+}
+
+.msg-success {
+  color: var(--success);
+  font-weight: 600;
+}
+</style>
