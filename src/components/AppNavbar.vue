@@ -1,4 +1,21 @@
-<script setup></script>
+<script setup>
+import { computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { useToast } from '@/composables/useToast'
+import { useAuthStore } from '@/stores/auth'
+
+const authStore = useAuthStore()
+const router = useRouter()
+const { showToast } = useToast()
+
+const userName = computed(() => authStore.user?.name || 'Mon compte')
+
+const handleLogout = async () => {
+  authStore.clearUser()
+  showToast('Déconnexion réussie.', 'success')
+  await router.push('/login')
+}
+</script>
 
 <template>
   <header class="page">
@@ -11,8 +28,21 @@
       <ul class="nav-links">
         <li><RouterLink to="/" class="nav-link">Accueil</RouterLink></li>
         <li><RouterLink to="/search" class="nav-link">Recherche</RouterLink></li>
-        <li><RouterLink to="/watchlist" class="nav-link">Watchlist</RouterLink></li>
-        <li><RouterLink to="/profile" class="nav-link">Profil</RouterLink></li>
+        <li v-if="authStore.isAuthenticated">
+          <RouterLink to="/watchlist" class="nav-link">Watchlist</RouterLink>
+        </li>
+        <li v-if="authStore.isAuthenticated">
+          <RouterLink to="/profile" class="nav-link">{{ userName }}</RouterLink>
+        </li>
+        <li v-if="!authStore.isAuthenticated">
+          <RouterLink to="/login" class="nav-link">Connexion</RouterLink>
+        </li>
+        <li v-if="!authStore.isAuthenticated">
+          <RouterLink to="/register" class="nav-link">Inscription</RouterLink>
+        </li>
+        <li v-if="authStore.isAuthenticated">
+          <button type="button" class="nav-button" @click="handleLogout">Déconnexion</button>
+        </li>
       </ul>
     </nav>
   </header>
@@ -57,7 +87,8 @@
   padding: 0;
 }
 
-.nav-link {
+.nav-link,
+.nav-button {
   text-decoration: none;
   padding: 9px 13px;
   border-radius: 999px;
@@ -66,7 +97,8 @@
   transition: color 170ms ease, background-color 170ms ease;
 }
 
-.nav-link:hover {
+.nav-link:hover,
+.nav-button:hover {
   color: var(--text-900);
   background: rgba(255, 255, 255, 0.7);
 }
@@ -74,6 +106,13 @@
 .nav-link.router-link-active {
   color: #fff;
   background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);
+}
+
+.nav-button {
+  border: none;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
 }
 
 @media (max-width: 760px) {
@@ -88,7 +127,8 @@
     flex-wrap: wrap;
   }
 
-  .nav-link {
+  .nav-link,
+  .nav-button {
     padding: 8px 11px;
     font-size: 0.95rem;
   }
