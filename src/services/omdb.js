@@ -1,4 +1,3 @@
-// src/services/omdb.js — fichier central pour tous les appels API
 const BASE = 'https://www.omdbapi.com'
 const CLE = import.meta.env.VITE_OMDB_API_KEY
 async function get(params) {

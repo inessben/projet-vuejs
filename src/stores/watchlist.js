@@ -2,7 +2,6 @@ import { defineStore } from 'pinia'
 
 export const useWatchlistStore = defineStore('watchlist', {
   state: () => ({
-    // Chaque item : { movie, watched, rating, comment, addedAt }
     items: []
   }),
 
@@ -35,12 +34,19 @@ export const useWatchlistStore = defineStore('watchlist', {
     enregistrerAvis(id, { rating, comment }) {
       const i = this.items.find((i) => i.movie.imdbID === id)
       if (!i) return false
-
       i.rating = rating
       i.comment = comment
       return true
+    },
+
+    charger(items) {
+      this.items = items ? [...items] : []
+    },
+
+    vider() {
+      this.items = []
     }
   },
 
-  persist: true
+  persist: false
 })

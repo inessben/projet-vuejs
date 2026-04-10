@@ -1,4 +1,4 @@
-import { createApp } from 'vue'
+import { createApp, watch } from 'vue'
 import { createPinia } from 'pinia'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import App from './App.vue'
@@ -14,3 +14,21 @@ app.use(pinia)
 app.use(router)
 app.directive('lazy-image', vLazyImage)
 app.mount('#app')
+
+import { useUserStore } from './stores/user'
+import { useAccountsStore } from './stores/accounts'
+import { useWatchlistStore } from './stores/watchlist'
+
+const userStore = useUserStore()
+const accountsStore = useAccountsStore()
+const watchlistStore = useWatchlistStore()
+
+watch(
+  () => watchlistStore.items,
+  (items) => {
+    if (userStore.id) {
+      accountsStore.sauvegarderWatchlist(userStore.id, items)
+    }
+  },
+  { deep: true }
+)

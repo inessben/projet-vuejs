@@ -1,4 +1,15 @@
-<script setup></script>
+<script setup>
+import { useUserStore } from '@/stores/user'
+import { useRouter } from 'vue-router'
+
+const userStore = useUserStore()
+const router = useRouter()
+
+function seDeconnecter() {
+  userStore.fermerSession()
+  router.push('/login')
+}
+</script>
 
 <template>
   <header class="page">
@@ -10,10 +21,25 @@
 
       <ul class="nav-links">
         <li><RouterLink to="/" class="nav-link">Accueil</RouterLink></li>
-        <li><RouterLink to="/search" class="nav-link">Recherche</RouterLink></li>
-        <li><RouterLink to="/watchlist" class="nav-link">Watchlist</RouterLink></li>
-        <li><RouterLink to="/profile" class="nav-link">Profil</RouterLink></li>
+        <li><RouterLink to="/genre/Action" class="nav-link">Genres</RouterLink></li>
+        <li v-if="userStore.estConnecte">
+          <RouterLink to="/watchlist" class="nav-link">Watchlist</RouterLink>
+        </li>
       </ul>
+
+      <div v-if="userStore.estConnecte" class="user-zone">
+        <RouterLink to="/profile" class="user-pill">
+          <span class="user-avatar">{{ userStore.initiales }}</span>
+          <span class="user-nom">@{{ userStore.username }}</span>
+        </RouterLink>
+        <button class="btn btn-secondary deco-btn" aria-label="Se déconnecter" @click="seDeconnecter">
+          <i class="fas fa-sign-out-alt" />
+        </button>
+      </div>
+
+      <RouterLink v-else to="/login" class="btn btn-primary login-btn">
+        Se connecter
+      </RouterLink>
     </nav>
   </header>
 </template>
@@ -55,6 +81,7 @@
   gap: 10px;
   margin: 0;
   padding: 0;
+  flex: 1;
 }
 
 .nav-link {
@@ -76,6 +103,63 @@
   background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);
 }
 
+.user-zone {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.user-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  padding: 5px 12px 5px 5px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.8);
+  transition: background-color 160ms ease;
+}
+
+.user-pill:hover {
+  background: #fff;
+}
+
+.user-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-nom {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-900);
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.deco-btn {
+  padding: 7px 12px;
+  font-size: 0.85rem;
+}
+
+.login-btn {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  font-size: 0.9rem;
+}
+
 @media (max-width: 760px) {
   .navbar {
     flex-direction: column;
@@ -91,6 +175,14 @@
   .nav-link {
     padding: 8px 11px;
     font-size: 0.95rem;
+  }
+
+  .user-zone {
+    justify-content: flex-end;
+  }
+
+  .login-btn {
+    align-self: flex-end;
   }
 }
 </style>
