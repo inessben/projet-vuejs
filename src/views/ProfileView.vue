@@ -1,8 +1,10 @@
 <script setup>
 import { computed } from 'vue'
 import { useWatchlistStore } from '@/stores/watchlist'
+import { useAuthStore } from '@/stores/auth'
 
 const store = useWatchlistStore()
+const authStore = useAuthStore()
 
 const stats = computed(() => {
   const vus = store.items.filter((item) => item.watched)
@@ -17,13 +19,17 @@ const stats = computed(() => {
     moyenne
   }
 })
+
+const displayName = computed(() => authStore.user?.name || 'Utilisateur')
+const displayEmail = computed(() => authStore.user?.email || '')
 </script>
 
 <template>
   <section class="page profile-view">
     <header class="panel header">
       <h1 class="section-title">Profil</h1>
-      <p class="text-muted">Suivi rapide de ton activite CineTrack.</p>
+      <p class="text-muted">Bienvenue {{ displayName }}.</p>
+      <p class="text-muted">{{ displayEmail }}</p>
     </header>
 
     <section class="stats-grid">
