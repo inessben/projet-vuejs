@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { useAuthStore } from '../stores/auth'
+import { useUserStore } from '@/stores/user'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -9,8 +9,13 @@ const router = createRouter({
       component: () => import('../views/HomeView.vue')
     },
     {
+      path: '/login',
+      component: () => import('../views/LoginView.vue'),
+      meta: { guestOnly: true }
+    },
+    {
       path: '/search',
-      component: () => import('../views/SearchView.vue')
+      redirect: '/'
     },
     {
       path: '/movie/:id',
@@ -35,16 +40,6 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
     {
-      path: '/login',
-      component: ()=> import ('../views/LoginView.vue'),
-      meta: { guestOnly: true }
-    },
-    {
-      path: '/register',
-      component: ()=> import('../views/RegisterView.vue'),
-      meta: { guestOnly: true }
-    },
-    {
       path: '/:pathMatch(.*)*',
       component: () => import('../views/NotFoundView.vue')
     }
@@ -52,18 +47,16 @@ const router = createRouter({
 })
 
 router.beforeEach((to) => {
-  const authStore = useAuthStore()
+  const userStore = useUserStore()
 
-  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-    return {
-      path: '/login',
-      query: { redirect: to.fullPath }
-    }
+  if (to.meta.requiresAuth && !userStore.estConnecte) {
+    return { path: '/login', query: { redirect: to.fullPath } }
   }
 
-  if (to.meta.guestOnly && authStore.isAuthenticated) {
-    return '/profile'
+  if (to.meta.guestOnly && userStore.estConnecte) {
+    return { path: '/profile' }
   }
 })
+
 
 export default router

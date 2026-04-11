@@ -1,230 +1,360 @@
 <script setup>
-import { ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { useToast } from '@/composables/useToast'
-import { useAuthStore } from '@/stores/auth'
+import { ref, computed, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { useUserStore } from '@/stores/user'
+import { useAccountsStore } from '@/stores/accounts'
 
-const email = ref('')
-const password = ref('')
-const isSubmitting = ref(false)
-
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'
-const { showToast } = useToast()
-const authStore = useAuthStore()
-const route = useRoute()
 const router = useRouter()
+const route = useRoute()
+const userStore = useUserStore()
+const accountsStore = useAccountsStore()
 
-const handleSubmit = async () => {
-  isSubmitting.value = true
+const mode = ref('login')
+function basculerMode() {
+  mode.value = mode.value === 'login' ? 'register' : 'login'
+  erreurGlobale.value = ''
+}
+
+const username = ref('')
+const password = ref('')
+const email = ref('')
+const passwordVisible = ref(false)
+const chargement = ref(false)
+const erreurGlobale = ref('')
+
+const REGEX_USERNAME = /^[a-zA-Z0-9_-]{3,20}$/
+const erreurUsername = computed(() => {
+  if (!username.value) return ''
+  if (!REGEX_USERNAME.test(username.value)) return '3–20 caractères, lettres/chiffres/_ autorisés.'
+  return ''
+})
+
+const usernameDisponible = computed(() => {
+  if (mode.value !== 'register') return null
+  if (!username.value || erreurUsername.value) return null
+  return !accountsStore.usernameDejaUtilise(username.value)
+})
+
+const erreurPassword = computed(() => {
+  if (!password.value) return ''
+  if (password.value.length < 8) return 'Minimum 8 caractères.'
+  if (!/\d/.test(password.value)) return 'Doit contenir au moins un chiffre.'
+  return ''
+})
+
+const erreurEmail = computed(() => {
+  if (mode.value !== 'register' || !email.value) return ''
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) return 'Email invalide.'
+  return ''
+})
+
+const formulaireValide = computed(() => {
+  if (erreurUsername.value || erreurPassword.value) return false
+  if (!username.value || !password.value) return false
+  if (mode.value === 'register') {
+    if (erreurEmail.value || !email.value) return false
+    if (usernameDisponible.value === false) return false
+  }
+  return true
+})
+
+watch([username, password, email], () => {
+  erreurGlobale.value = ''
+})
+
+async function soumettre() {
+  if (!formulaireValide.value || chargement.value) return
+  chargement.value = true
+  erreurGlobale.value = ''
 
   try {
-    const response = await fetch(`${apiBaseUrl}/api/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
+    if (mode.value === 'register') {
+      const { ok, erreur, compte } = await accountsStore.inscrire({
+        username: username.value,
         email: email.value,
         password: password.value
       })
-    })
-
-    const data = await response.json()
-
-    if (!response.ok) {
-      throw new Error(data.message || 'Connexion impossible.')
+      if (!ok) {
+        erreurGlobale.value = erreur
+        return
+      }
+      userStore.ouvrirSession({ id: compte.id, username: compte.username, email: compte.email })
+    } else {
+      const { ok, erreur, compte } = await accountsStore.verifierConnexion({
+        username: username.value,
+        password: password.value
+      })
+      if (!ok) {
+        erreurGlobale.value = erreur
+        return
+      }
+      userStore.ouvrirSession({ id: compte.id, username: compte.username, email: compte.email })
     }
 
-    authStore.setUser(data.user)
-    showToast(`Bienvenue ${data.user?.name || ''}`.trim(), 'success')
-    email.value = ''
-    password.value = ''
-
-    const redirectTarget =
-      typeof route.query.redirect === 'string' && route.query.redirect.startsWith('/')
-        ? route.query.redirect
-        : '/profile'
-
-    await router.push(redirectTarget)
-  } catch (error) {
-    showToast(error.message || 'Une erreur est survenue.', 'error')
+    const destination = route.query.redirect || '/profile'
+    router.push(destination)
   } finally {
-    isSubmitting.value = false
+    chargement.value = false
   }
 }
 </script>
 
 <template>
-  <section class="login-card">
-    <p class="login-subtitle">CONNEXION</p>
-    <h1 class="login-title">Bienvenue</h1>
-    <p class="login-text">Connecte-toi pour accéder à ta watchlist et à ton profil CineTrack.</p>
-
-    <form @submit.prevent="handleSubmit" class="login-form">
-      <div class="form-group">
-        <label for="email">Adresse mail</label>
-        <input id="email" v-model="email" type="email" placeholder="tonmail@exemple.com" required />
+  <section class="page auth-view">
+    <article class="panel auth-card">
+      <div class="auth-header">
+        <span class="brand-mark" />
+        <h1 class="section-title">
+          {{ mode === 'login' ? 'Connexion' : 'Inscription' }}
+        </h1>
+        <p class="text-muted">
+          {{
+            mode === 'login'
+              ? 'Retrouve ta watchlist et tes avis.'
+              : 'Crée ton compte CineTrack gratuitement.'
+          }}
+        </p>
       </div>
 
-      <div class="form-group">
-        <label for="password">Mot de passe</label>
-        <input id="password" v-model="password" type="password" placeholder="••••••••" required />
-      </div>
+      <form class="auth-form" @submit.prevent="soumettre">
+        <div class="field">
+          <label class="field-label" for="auth-username">Nom d'utilisateur</label>
+          <div class="input-wrapper">
+            <input
+              id="auth-username"
+              v-model="username"
+              class="input"
+              :class="{
+                'input-error': erreurUsername,
+                'input-ok': mode === 'register' && usernameDisponible === true && !erreurUsername
+              }"
+              type="text"
+              placeholder="ex: MonSuperUsername"
+              autocomplete="username"
+              maxlength="20"
+            />
+            <span
+              v-if="mode === 'register' && username && !erreurUsername"
+              class="badge"
+              :class="usernameDisponible ? 'badge-ok' : 'badge-taken'"
+            >
+              {{ usernameDisponible ? '✓ Disponible' : '✗ Déjà pris' }}
+            </span>
+          </div>
+          <p v-if="erreurUsername" class="field-error">{{ erreurUsername }}</p>
+        </div>
 
-      <div class="actions">
-        <button type="submit" class="primary-btn" :disabled="isSubmitting">
-          {{ isSubmitting ? 'Connexion...' : 'Se connecter' }}
+        <div v-if="mode === 'register'" class="field">
+          <label class="field-label" for="auth-email">Email</label>
+          <input
+            id="auth-email"
+            v-model="email"
+            class="input"
+            :class="{ 'input-error': erreurEmail }"
+            type="email"
+            placeholder="ton@email.com"
+            autocomplete="email"
+          />
+          <p v-if="erreurEmail" class="field-error">{{ erreurEmail }}</p>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="auth-password">Mot de passe</label>
+          <div class="password-wrapper">
+            <input
+              id="auth-password"
+              v-model="password"
+              class="input password-input"
+              :class="{ 'input-error': erreurPassword }"
+              :type="passwordVisible ? 'text' : 'password'"
+              placeholder="Min. 8 caractères + 1 chiffre"
+              autocomplete="current-password"
+            />
+            <button
+              type="button"
+              class="toggle-password"
+              :aria-label="passwordVisible ? 'Masquer' : 'Afficher'"
+              @click="passwordVisible = !passwordVisible"
+            >
+              {{ passwordVisible ? '🙈' : '👁' }}
+            </button>
+          </div>
+          <p v-if="erreurPassword" class="field-error">{{ erreurPassword }}</p>
+          <p v-if="mode === 'register' && !erreurPassword && password" class="field-hint">
+            Mot de passe fort
+          </p>
+        </div>
+
+        <p v-if="erreurGlobale" class="erreur-globale">{{ erreurGlobale }}</p>
+
+        <button
+          type="submit"
+          class="btn btn-primary submit-btn"
+          :disabled="!formulaireValide || chargement"
+        >
+          {{ chargement ? 'Chargement...' : mode === 'login' ? 'Se connecter' : 'Créer le compte' }}
         </button>
-        <router-link to="/register" class="secondary-btn"> Créer un compte </router-link>
+      </form>
+
+      <div class="switch-mode">
+        <span class="text-muted">
+          {{ mode === 'login' ? 'Pas encore de compte ?' : 'Déjà inscrit ?' }}
+        </span>
+        <button class="link-btn" type="button" @click="basculerMode">
+          {{ mode === 'login' ? "S'inscrire" : 'Se connecter' }}
+        </button>
       </div>
-    </form>
+    </article>
   </section>
 </template>
 
 <style scoped>
-.login-card {
-  max-width: 700px;
-  margin: 24px auto;
-  padding: 32px 24px;
-  background: #f8f8f8;
-  border-radius: 24px;
-  box-shadow: 0 10px 30px rgba(120, 140, 160, 0.12);
-  border: 1px solid rgba(80, 95, 120, 0.08);
-}
-
-.login-subtitle {
-  margin: 0 0 12px;
-  font-size: 0.95rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #3d4b63;
-}
-
-.login-title {
-  margin: 0 0 16px;
-  font-size: 3rem;
-  line-height: 1.1;
-  font-weight: 800;
-  color: #1f2a3d;
-  font-family: Georgia, 'Times New Roman', serif;
-}
-
-.login-text {
-  margin: 0 0 28px;
-  font-size: 1.15rem;
-  line-height: 1.7;
-  color: #3d4b63;
-  max-width: 560px;
-}
-
-.login-form {
+.auth-view {
   display: flex;
-  flex-direction: column;
-  gap: 20px;
+  align-items: center;
+  justify-content: center;
+  min-height: 70vh;
 }
 
-.form-group {
-  display: flex;
-  flex-direction: column;
+.auth-card {
+  width: min(440px, 100%);
+  padding: clamp(24px, 4vw, 36px);
+  display: grid;
+  gap: 28px;
+}
+
+.auth-header {
+  display: grid;
   gap: 8px;
+  text-align: center;
+}
+.auth-header .section-title {
+  margin: 0;
+}
+.auth-header p {
+  margin: 0;
+  font-size: 0.95rem;
 }
 
-label {
-  font-size: 1rem;
-  font-weight: 700;
-  color: #2f3b52;
+.brand-mark {
+  display: block;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);
+  box-shadow: 0 0 0 10px rgba(255, 122, 69, 0.12);
+  margin: 0 auto 6px;
 }
 
-input {
-  width: 100%;
-  padding: 16px 18px;
-  font-size: 1rem;
-  color: #1f2a3d;
-  background: #ffffff;
-  border: 1px solid #d9dde5;
-  border-radius: 18px;
-  outline: none;
-  transition: all 0.2s ease;
-  box-sizing: border-box;
-}
-
-input::placeholder {
-  color: #93a0b4;
-}
-
-input:focus {
-  border-color: #f9732f;
-  box-shadow: 0 0 0 4px rgba(249, 115, 47, 0.12);
-}
-
-.actions {
-  margin-top: 8px;
+.auth-form {
+  display: grid;
   gap: 16px;
+}
+
+.field {
+  display: grid;
+  gap: 5px;
+}
+
+.field-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-700);
+}
+
+.field-error {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--danger);
+}
+
+.field-hint {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--success);
+}
+
+.input-error {
+  border-color: var(--danger) !important;
+}
+.input-ok {
+  border-color: var(--success) !important;
+}
+
+.input-wrapper {
+  display: grid;
+  gap: 5px;
+}
+
+.badge {
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+  width: fit-content;
+}
+.badge-ok {
+  background: rgba(29, 155, 102, 0.12);
+  color: var(--success);
+}
+.badge-taken {
+  background: rgba(211, 72, 72, 0.1);
+  color: var(--danger);
+}
+
+.password-wrapper {
+  position: relative;
   display: flex;
-  justify-content: flex-start;
+  align-items: center;
 }
-
-.primary-btn {
+.password-input {
+  padding-right: 42px;
+}
+.toggle-password {
+  position: absolute;
+  right: 10px;
+  background: none;
   border: none;
-  border-radius: 999px;
-  padding: 14px 26px;
-  background: linear-gradient(180deg, #ff7a36 0%, #f56824 100%);
-  color: white;
-  font-size: 1rem;
-  font-weight: 800;
   cursor: pointer;
-  box-shadow: 0 10px 20px rgba(245, 104, 36, 0.22);
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
+  font-size: 1rem;
+  padding: 0;
+  line-height: 1;
 }
 
-.primary-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 14px 24px rgba(245, 104, 36, 0.28);
+.erreur-globale {
+  margin: 0;
+  padding: 10px 14px;
+  background: rgba(211, 72, 72, 0.08);
+  border: 1px solid rgba(211, 72, 72, 0.25);
+  border-radius: 10px;
+  color: var(--danger);
+  font-size: 0.88rem;
 }
 
-.primary-btn:active {
-  transform: translateY(0);
+.submit-btn {
+  width: 100%;
+  padding: 13px;
+  font-size: 1rem;
 }
 
-.primary-btn:disabled {
-  cursor: wait;
-  opacity: 0.75;
+.switch-mode {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 0.9rem;
 }
-
-.secondary-btn {
-  border-radius: 999px;
-  padding: 14px 26px;
-  background: transparent;
-  border: 2px solid #f56824;
-  color: #f56824;
-  font-weight: 700;
-  text-decoration: none;
-  display: inline-block;
+.link-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  color: var(--accent-strong);
+  padding: 0;
+  text-decoration: underline;
 }
-
-.secondary-btn:hover {
-  background: rgba(245, 104, 36, 0.08);
-}
-
-@media (max-width: 768px) {
-  .login-card {
-    padding: 24px 18px;
-    border-radius: 20px;
-  }
-
-  .login-title {
-    font-size: 2.2rem;
-  }
-
-  .login-text {
-    font-size: 1rem;
-  }
-
-  .primary-btn {
-    width: 100%;
-  }
+.link-btn:hover {
+  color: var(--accent);
 }
 </style>
