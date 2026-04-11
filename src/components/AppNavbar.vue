@@ -1,6 +1,7 @@
 <script setup>
 import { useUserStore } from '@/stores/user'
 import { useRouter } from 'vue-router'
+import logo from '@/assets/logo.png'
 
 const userStore = useUserStore()
 const router = useRouter()
@@ -15,8 +16,8 @@ function seDeconnecter() {
   <header class="page">
     <nav class="panel navbar">
       <RouterLink to="/" class="brand">
-        <span class="brand-mark" />
-        <span>CineTrack</span>
+        <img :src="logo" alt="CineTrack" class="brand-logo" />
+        <span class="brand-name">CineTrack</span>
       </RouterLink>
 
       <ul class="nav-links">
@@ -41,7 +42,9 @@ function seDeconnecter() {
         </button>
       </div>
 
-      <RouterLink v-else to="/login" class="btn btn-primary login-btn"> Se connecter </RouterLink>
+      <RouterLink v-else to="/login" class="btn btn-primary login-btn">
+        Se connecter
+      </RouterLink>
     </nav>
   </header>
 </template>
@@ -53,60 +56,62 @@ function seDeconnecter() {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 18px;
-  padding: 12px 16px;
+  gap: 16px;
+  padding: 10px 18px;
 }
 
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 9px;
   text-decoration: none;
-  font-family: 'Fraunces', serif;
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: var(--text-900);
+  flex-shrink: 0;
 }
 
-.brand-mark {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #ff7a45 0%, #ef5f27 100%);
-  box-shadow: 0 0 0 5px rgba(255, 122, 69, 0.2);
+.brand-logo {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.brand-name {
+  font-family: 'Fraunces', serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-900);
+  letter-spacing: -0.01em;
 }
 
 .nav-links {
   list-style: none;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 4px;
   margin: 0;
   padding: 0;
   flex: 1;
 }
 
-.nav-link,
-.nav-button {
+.nav-link {
   text-decoration: none;
-  padding: 9px 13px;
+  padding: 7px 14px;
   border-radius: 999px;
   color: var(--text-700);
-  font-weight: 500;
-  transition:
-    color 170ms ease,
-    background-color 170ms ease;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: color var(--transition), background-color var(--transition);
+  display: block;
 }
 
-.nav-link:hover,
-.nav-button:hover {
+.nav-link:hover {
   color: var(--text-900);
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(0, 0, 0, 0.05);
 }
 
 .nav-link.router-link-active {
-  color: #fff;
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);
+  color: var(--accent-strong);
+  background: var(--accent-soft);
 }
 
 .user-zone {
@@ -123,73 +128,87 @@ function seDeconnecter() {
   text-decoration: none;
   padding: 5px 12px 5px 5px;
   border-radius: 999px;
-  border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.8);
-  transition: background-color 160ms ease;
+  border: 1.5px solid var(--line);
+  background: rgba(255, 255, 255, 0.85);
+  transition: background-color var(--transition), border-color var(--transition), box-shadow var(--transition);
 }
 
 .user-pill:hover {
   background: #fff;
+  border-color: rgba(22, 32, 45, 0.18);
+  box-shadow: 0 4px 12px rgba(13, 23, 35, 0.08);
 }
 
 .user-avatar {
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);
   color: #fff;
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-family: 'Open Sans', sans-serif;
+  flex-shrink: 0;
 }
 
 .user-nom {
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   color: var(--text-900);
-  max-width: 120px;
+  max-width: 110px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .deco-btn {
-  padding: 7px 12px;
+  padding: 7px 11px;
   font-size: 0.85rem;
+  color: var(--text-700);
+}
+
+.deco-btn:hover {
+  color: var(--danger);
+  border-color: rgba(211, 72, 72, 0.3);
 }
 
 .login-btn {
   flex-shrink: 0;
-  padding: 8px 16px;
-  font-size: 0.9rem;
+  padding: 8px 18px;
+  font-size: 0.875rem;
 }
 
 @media (max-width: 760px) {
   .navbar {
-    flex-direction: column;
-    align-items: stretch;
-    padding: 14px;
+    flex-wrap: wrap;
+    padding: 12px 14px;
+    gap: 10px;
+  }
+
+  .brand-name {
+    font-size: 1rem;
   }
 
   .nav-links {
-    justify-content: space-between;
-    flex-wrap: wrap;
+    order: 3;
+    width: 100%;
+    gap: 2px;
   }
 
-  .nav-link,
-  .nav-button {
-    padding: 8px 11px;
-    font-size: 0.95rem;
+  .nav-link {
+    padding: 7px 11px;
+    font-size: 0.85rem;
   }
 
   .user-zone {
-    justify-content: flex-end;
+    margin-left: auto;
   }
 
   .login-btn {
-    align-self: flex-end;
+    margin-left: auto;
   }
 }
 </style>
