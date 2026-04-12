@@ -1,28 +1,17 @@
 {
   "name": "cinetrack",
   "version": "1.0.0",
-  "description": "CineTrack, une app Vue.js 3 pour gérer sa watchlist de films",
-  "type": "module",
+  "private": true,
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "lint": "eslint . --ext .vue,.js --fix",
-    "format": "prettier --write src/"
+    "dev": "nuxt dev",
+    "build": "nuxt build",
+    "preview": "nuxt preview",
+    "generate": "nuxt generate"
   },
   "dependencies": {
-    "mysql2": "^3.21.0",
+    "nuxt": "^3.13.0",
+    "@pinia/nuxt": "^0.5.5",
     "pinia": "^2.1.7",
-    "pinia-plugin-persistedstate": "^3.2.1",
-    "vue": "^3.4.0",
-    "vue-router": "^4.2.5"
-  },
-  "devDependencies": {
-    "@vitejs/plugin-vue": "^5.0.0",
-    "@vue/eslint-config-prettier": "^10.2.0",
-    "eslint": "^8.57.1",
-    "eslint-plugin-vue": "^9.33.0",
-    "prettier": "^3.8.1",
-    "vite": "^5.0.0"
+    "pinia-plugin-persistedstate": "^3.2.1"
   }
 }
