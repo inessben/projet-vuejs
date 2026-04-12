@@ -41,12 +41,18 @@ const listeActeurs = computed(() =>
 
 .cast-item {
   padding: 8px 13px;
-  border: 1px solid rgba(22, 32, 45, 0.16);
+  border: 1px solid var(--line-strong);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.9);
+  background: var(--button-secondary-bg);
   color: var(--text-900);
-  font-weight: 500;
+  font-weight: 600;
   white-space: nowrap;
+  transition: background-color var(--transition), border-color var(--transition), color var(--transition);
+}
+
+.cast-item:hover {
+  background: var(--button-secondary-hover);
+  border-color: var(--line-strong);
 }
 
 .cast p {

@@ -248,12 +248,12 @@ function onAvisEnregistre() {
 
 .btn-danger-soft {
   color: var(--danger);
-  background: rgba(255, 255, 255, 0.9);
+  background: var(--button-danger-soft-bg);
   border: 1px solid rgba(211, 72, 72, 0.25);
 }
 
 .btn-danger-soft:hover {
-  background: var(--danger);
+  background: var(--button-danger-soft-hover-bg);
   color: #fff;
   border-color: var(--danger);
   transform: translateY(-1px);
