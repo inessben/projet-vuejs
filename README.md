@@ -1,175 +1,169 @@
-# CineTrack 🎬
+# CineTrack
 
-Projet Vue.js — App de watchlist de films — on cherche des films, on les ajoute à sa liste, on note ceux qu'on a vus. Les données viennent de l'API OMDb (gratuite).
+Application web cinéma (Nuxt 3 + Pinia) pour rechercher des films, créer une watchlist, noter les films vus et suivre ses stats de profil.
 
-Groupe : Iness · Mariam · Théa · Ethan
+Projet réalisé par : Ines, Mariam, Thea, Ethan.
 
----
+## Installation
 
-## C'est quoi ?
+### 1. Prérequis
 
-Un Letterboxd simplifié. T'ajoutes des films à ta liste, tu marques ceux que t'as vus, tu laisses une note et un commentaire. La watchlist est sauvegardée dans le localStorage donc elle disparaît pas si tu fermes le navigateur.
+- Node.js 18+ (recommandé : 20 LTS)
+- npm
 
-On a aussi une page de recherche avec des filtres, une fiche détaillée par film, et une page profil avec quelques stats (films vus, note moyenne, genre préféré).
+### 2. Installer le projet
 
----
+```bash
+git clone https://github.com/inessben/projet-vuejs.git
+cd projet-vuejs
+npm install
+```
 
-## Stack
-
-Vue 3 + Composition API, Vue Router 4, Pinia (avec persistance localStorage), Vite, ESLint + Prettier.
-
----
-
-## Lancer le projet
-
-### 1. Récupérer une clé API OMDb
+### 3. Récupérer une clé API OMDb
 
 C'est gratuit et ça prend 2 minutes.
 
 1. Va sur [omdbapi.com/apikey.aspx](https://www.omdbapi.com/apikey.aspx)
 2. Choisis le plan **FREE** (1000 requêtes/jour, c'est largement suffisant)
 3. Entre ton adresse mail et valide
-4. Tu reçois un mail de `omdbapi.com` avec le sujet **"API Key"** — vérifie les spams si tu vois rien
-5. Dans le mail, clique sur le **lien d'activation** (sans ça la clé marchera pas)
+4. Tu reçois un mail de `omdbapi.com` avec le sujet **"API Key"** (vérifie les spams si tu ne vois rien)
+5. Dans le mail, clique sur le lien d'activation (sans ça la clé ne marche pas)
 6. Ta clé ressemble à ça : `1f4f4f3b` (8 caractères)
 
-### 2. Cloner et installer
+### 4. Configurer le fichier .env
 
-````bash
+Copier le fichier d'exemple et ajouter ta clé :
 
 ```bash
-git clone https://github.com/inessben/projet-vuejs.git
-cd projet-vue
-npm install
-#ou
-npm install -D vite @vitejs/plugin-vue eslint eslint-plugin-vue
-
-
-npm run dev
-
-npm run lint      # corrige les erreurs ESLint
-npm run format    # formate tout le code avec Prettier
-````
-
+cp .env.example .env
+# ou en PowerShell :
+Copy-Item .env.example .env
 ```
 
-### 3. Créer ton fichier .env
+Contenu attendu dans `.env` :
 
-Crée un fichier `.env` à la racine du projet (là où y'a le `package.json`) et colle ça dedans :
-
+```env
+NUXT_PUBLIC_OMDB_API_KEY=VOTRE_CLE_OMDB
 ```
 
-VITE_OMDB_API_KEY=ta_clé_ici
+> Le `.env` est personnel (à ne pas partager publiquement).
 
-````
-
-
-> ⚠️ Le `.env` est dans le `.gitignore` — chacun crée le sien avec sa propre clé. On le commit jamais, on l'envoie pas sur Discord non plus.
-
-### 4. Lancer
+### 5. Lancer en local
 
 ```bash
 npm run dev
-# → http://localhost:5173
-````
+```
 
-Pour vérifier que ta clé est bien chargée, ouvre la console du navigateur (`F12`) et tape :
+Application disponible sur : `http://localhost:3001` (ou le port affiché par Nuxt).
+
+### 6. Vérifier que la clé est bien chargée
+
+Ouvre la console navigateur (`F12`) et tape :
 
 ```js
-import.meta.env.VITE_OMDB_API_KEY;
+window.__NUXT__?.config?.public?.omdbApiKey
 ```
 
-Si ça retourne ta clé c'est bon. Si ça retourne `undefined`, redémarre le serveur avec `Ctrl+C` puis `npm run dev`.
+- Si ça retourne ta clé, c'est bon.
+- Si ça retourne `undefined`, redémarre le serveur avec `Ctrl + C` puis `npm run dev`.
 
-### Autres commandes
+## Explication du projet
+
+CineTrack est une application de suivi de films.
+
+Objectifs :
+- trouver rapidement un film via OMDb,
+- l'ajouter à une watchlist personnelle,
+- marquer les films vus,
+- laisser une note (étoiles) et un commentaire,
+- visualiser des statistiques utilisateur sur la page profil.
+
+Stack :
+- Nuxt 3 (SPA),
+- Pinia + persistance locale,
+- API OMDb,
+- Dark mode + interface responsive,
+- Qualité de code avec **ESLint** et **Prettier**.
+
+## Fonctionnalités
+
+- Recherche de films en direct avec infinite scroll.
+- Section "films populaires" sur l'accueil.
+- Navigation par genres (`/genre/[id]`).
+- Fiche film détaillée (`/movie/[id]`) avec casting.
+- Ajout / retrait de la watchlist.
+- Marquer "vu / non vu".
+- Avis utilisateur : note + commentaire.
+- Modification d'un avis déjà enregistré.
+- Auth locale (inscription / connexion) avec session persistante.
+- Profil utilisateur dynamique (films en liste, films vus, note moyenne, genre favori, progression).
+- Dark mode natif + design responsive (desktop, tablette, mobile).
+
+## Tests unitaires
+
+Le projet inclut des tests unitaires avec **Vitest** et **@vue/test-utils**.
+
+Composants testés :
+- `AppNavbar` (rendu, session utilisateur, logout, thème),
+- `SearchBar` (accessibilité, saisie, événements),
+- `WatchlistButton` (ajout/retrait watchlist, gestion erreur API).
+
+Lancer les tests :
 
 ```bash
-npm run build     # prod
-npm run preview   # tester le build
+npm run test
 ```
 
----
+## Screens
 
-## Structure
+### 1) Connexion
+![Connexion](docs/screens/screen-01.png)
 
-```
-src/
-├── components/    → les composants réutilisables
-├── views/         → une view par page/route
-├── stores/        → les 3 stores Pinia (movies, watchlist, user)
-├── composables/   → useDebounce, useToast, useMovieFetch, useInfiniteScroll
-├── directives/    → v-lazy-image
-├── services/      → tmdb.js, tous les appels API au même endroit
-└── router/        → index.js
-```
+### 2) Inscription
+![Inscription](docs/screens/screen-02.png)
 
----
+### 3) Profil
+![Profil](docs/screens/screen-03.png)
 
-## Qui fait quoi
+### 4) Watchlist
+![Watchlist](docs/screens/screen-04.png)
 
-On a réparti pour que chacun touche à toutes les notions Vue du cours. Personne fait que du CSS pendant qu'un autre fait toute la logique.
+### 5) Fiche film + avis
+![Fiche film](docs/screens/screen-05.png)
 
----
+### 6) Validation inscription (format username)
+![Validation username](docs/screens/screen-06.png)
 
-**Iness — Recherche & Home**
+### 7) Validation inscription (email + mot de passe)
+![Validation email mdp](docs/screens/screen-07.png)
 
-`SearchBar.vue`, `FilterPanel.vue`, `GenreBadge.vue`, `HomeView.vue` et `SearchView.vue`.
+### 8) Validation inscription (username déjà pris)
+![Validation username pris](docs/screens/screen-08.png)
 
-Côté notions Vue : `defineModel()` sur la SearchBar, watcher deep sur les filtres (pour relancer la recherche automatiquement quand un filtre change), le composable `useDebounce` pour pas flood l'API à chaque lettre, et les appels API search.
+### 9) Accueil (version finale)
+![Accueil final](docs/screens/screen-09.png)
 
----
+### 10) Grille des films populaires
+![Films populaires](docs/screens/screen-10.png)
 
-**Mariam — Fiche film & Casting**
+### 11) Page genre (Horror)
+![Genre Horror](docs/screens/screen-11.png)
 
-`MovieCard.vue`, `HeroSection.vue`, `CastCarousel.vue`, `MovieDetailView.vue` et `PersonDetailView.vue`.
+## Limites / Améliorations possibles
 
-Côté notions Vue : slots nommés sur HeroSection (`#title`, `#actions`, `#meta`), scoped slot sur CastCarousel, le composable `useMovieFetch` qui watch `route.params.id` pour recharger quand on navigue entre deux films, et les appels API détails film.
+### Limites actuelles
 
----
+- Auth locale simplifiée (pas de backend auth complet type JWT/session robuste).
+- Données utilisateurs stockées localement (pas de base distante).
+- Dépendance au quota OMDb (plan gratuit limité).
+- Couverture tests encore partielle.
 
-**Théa — Watchlist & Formulaires**
+### Améliorations possibles
 
-`WatchlistButton.vue`, `MovieReviewForm.vue`, `RatingStars.vue`, `WatchlistView.vue` et le store watchlist.
-
-Côté notions Vue : `defineModel()` sur RatingStars, formulaire avec validation complète (note obligatoire, commentaire 20-500 chars, messages d'erreur inline), computed `filteredAndSortedWatchlist` qui combine filtre + tri + recherche, store Pinia persisté, et lazy loading du formulaire d'avis.
-
----
-
-**Ethan — Architecture, Router & Profil**
-
-`AppNavbar.vue`, `MovieGrid.vue`, `ToastNotification.vue`, toute la config du router, `ProfileView.vue`, les stores movies et user, et la directive `v-lazy-image`.
-
-Côté notions Vue : lazy loading des routes, computed `watchlistStats` dans ProfileView, composable `useToast` global, directive custom avec IntersectionObserver, et les deux stores Pinia movies/user.
-
----
-
-## Routes
-
-```
-/             → Home
-/search       → Recherche + filtres
-/movie/:id    → Fiche film  (dynamique)
-/person/:id   → Fiche acteur  (dynamique)
-/watchlist    → Ta liste
-/genre/:id    → Films par genre  (dynamique)
-/profile      → Tes stats
-/*            → 404
-```
-
-## Planning
-
-Sprint 1 (25-29 mars) — setup, home avec vrais films, watchlist de base
-Sprint 2 (30 mars - 6 avril) — toutes les pages, tous les critères du sujet
-Sprint 3 (7-12 avril) — polish, build, zip MyGES
-
-**Deadline : 13 avril 2026**
-
----
-
-## Ce qu'on a pas fait
-
-- Auth (pas de vrai compte utilisateur)
-- Tests unitaires
-- PWA / mode offline
-
----
+- Ajouter plus de tests (autres composants/pages, e2e).
+- Ajouter un vrai backend + base de données.
+- Ajouter des filtres avancés (année, note IMDb, durée, etc.).
+- Améliorer pagination/virtualisation pour gros volumes.
+- Ajouter une section favoris séparée de la watchlist.
+- Ajouter mode hors-ligne (PWA) + cache intelligent.
+- Ajouter i18n (FR/EN) et options d'accessibilité avancées.
