@@ -1,3 +1,7 @@
+<script setup>
+useTheme()
+</script>
+
 <template>
   <div class="app-shell">
     <div class="app-glow app-glow-left" />
