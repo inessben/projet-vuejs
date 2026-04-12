@@ -3,6 +3,7 @@ import { ref, computed, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { useAccountsStore } from '@/stores/accounts'
+import logo from '@/assets/logo.png'
 
 const router = useRouter()
 const route = useRoute()
@@ -74,20 +75,14 @@ async function soumettre() {
         email: email.value,
         password: password.value
       })
-      if (!ok) {
-        erreurGlobale.value = erreur
-        return
-      }
+      if (!ok) { erreurGlobale.value = erreur; return }
       userStore.ouvrirSession({ id: compte.id, username: compte.username, email: compte.email })
     } else {
       const { ok, erreur, compte } = await accountsStore.verifierConnexion({
         username: username.value,
         password: password.value
       })
-      if (!ok) {
-        erreurGlobale.value = erreur
-        return
-      }
+      if (!ok) { erreurGlobale.value = erreur; return }
       userStore.ouvrirSession({ id: compte.id, username: compte.username, email: compte.email })
     }
 
@@ -103,16 +98,12 @@ async function soumettre() {
   <section class="page auth-view">
     <article class="panel auth-card">
       <div class="auth-header">
-        <span class="brand-mark" />
-        <h1 class="section-title">
+        <img :src="logo" alt="CineTrack" class="auth-logo" />
+        <h1 class="auth-title">
           {{ mode === 'login' ? 'Connexion' : 'Inscription' }}
         </h1>
-        <p class="text-muted">
-          {{
-            mode === 'login'
-              ? 'Retrouve ta watchlist et tes avis.'
-              : 'Crée ton compte CineTrack gratuitement.'
-          }}
+        <p class="text-muted auth-subtitle">
+          {{ mode === 'login' ? 'Retrouve ta watchlist et tes avis.' : 'Crée ton compte CineTrack gratuitement.' }}
         </p>
       </div>
 
@@ -180,9 +171,7 @@ async function soumettre() {
             </button>
           </div>
           <p v-if="erreurPassword" class="field-error">{{ erreurPassword }}</p>
-          <p v-if="mode === 'register' && !erreurPassword && password" class="field-hint">
-            Mot de passe fort
-          </p>
+          <p v-if="mode === 'register' && !erreurPassword && password" class="field-hint">✓ Mot de passe valide</p>
         </div>
 
         <p v-if="erreurGlobale" class="erreur-globale">{{ erreurGlobale }}</p>
@@ -197,9 +186,7 @@ async function soumettre() {
       </form>
 
       <div class="switch-mode">
-        <span class="text-muted">
-          {{ mode === 'login' ? 'Pas encore de compte ?' : 'Déjà inscrit ?' }}
-        </span>
+        <span class="text-muted">{{ mode === 'login' ? 'Pas encore de compte ?' : 'Déjà inscrit ?' }}</span>
         <button class="link-btn" type="button" @click="basculerMode">
           {{ mode === 'login' ? "S'inscrire" : 'Se connecter' }}
         </button>
@@ -218,9 +205,9 @@ async function soumettre() {
 
 .auth-card {
   width: min(440px, 100%);
-  padding: clamp(24px, 4vw, 36px);
+  padding: clamp(24px, 4vw, 40px);
   display: grid;
-  gap: 28px;
+  gap: 26px;
 }
 
 .auth-header {
@@ -228,22 +215,28 @@ async function soumettre() {
   gap: 8px;
   text-align: center;
 }
-.auth-header .section-title {
-  margin: 0;
-}
-.auth-header p {
-  margin: 0;
-  font-size: 0.95rem;
+
+.auth-logo {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  border-radius: 12px;
+  margin: 0 auto 4px;
+  display: block;
 }
 
-.brand-mark {
-  display: block;
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);
-  box-shadow: 0 0 0 10px rgba(255, 122, 69, 0.12);
-  margin: 0 auto 6px;
+.auth-title {
+  margin: 0;
+  font-family: 'Fraunces', serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--text-900);
+  letter-spacing: -0.01em;
+}
+
+.auth-subtitle {
+  margin: 0;
+  font-size: 0.92rem;
 }
 
 .auth-form {
@@ -257,8 +250,8 @@ async function soumettre() {
 }
 
 .field-label {
-  font-size: 0.85rem;
-  font-weight: 600;
+  font-size: 0.84rem;
+  font-weight: 700;
   color: var(--text-700);
 }
 
@@ -276,9 +269,12 @@ async function soumettre() {
 
 .input-error {
   border-color: var(--danger) !important;
+  box-shadow: 0 0 0 3px rgba(211, 72, 72, 0.10) !important;
 }
+
 .input-ok {
   border-color: var(--success) !important;
+  box-shadow: 0 0 0 3px rgba(29, 155, 102, 0.10) !important;
 }
 
 .input-wrapper {
@@ -287,18 +283,20 @@ async function soumettre() {
 }
 
 .badge {
-  font-size: 0.78rem;
-  font-weight: 600;
-  padding: 2px 8px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 2px 9px;
   border-radius: 999px;
   width: fit-content;
 }
+
 .badge-ok {
-  background: rgba(29, 155, 102, 0.12);
+  background: rgba(29, 155, 102, 0.10);
   color: var(--success);
 }
+
 .badge-taken {
-  background: rgba(211, 72, 72, 0.1);
+  background: rgba(211, 72, 72, 0.08);
   color: var(--danger);
 }
 
@@ -307,34 +305,42 @@ async function soumettre() {
   display: flex;
   align-items: center;
 }
+
 .password-input {
-  padding-right: 42px;
+  padding-right: 44px;
 }
+
 .toggle-password {
   position: absolute;
-  right: 10px;
+  right: 12px;
   background: none;
   border: none;
   cursor: pointer;
   font-size: 1rem;
   padding: 0;
   line-height: 1;
+  opacity: 0.7;
+  transition: opacity var(--transition);
+}
+
+.toggle-password:hover {
+  opacity: 1;
 }
 
 .erreur-globale {
   margin: 0;
   padding: 10px 14px;
-  background: rgba(211, 72, 72, 0.08);
-  border: 1px solid rgba(211, 72, 72, 0.25);
-  border-radius: 10px;
+  background: rgba(211, 72, 72, 0.07);
+  border: 1.5px solid rgba(211, 72, 72, 0.22);
+  border-radius: var(--radius-md);
   color: var(--danger);
-  font-size: 0.88rem;
+  font-size: 0.87rem;
 }
 
 .submit-btn {
   width: 100%;
-  padding: 13px;
-  font-size: 1rem;
+  padding: 12px;
+  font-size: 0.95rem;
 }
 
 .switch-mode {
@@ -344,16 +350,21 @@ async function soumettre() {
   gap: 6px;
   font-size: 0.9rem;
 }
+
 .link-btn {
   background: none;
   border: none;
   cursor: pointer;
-  font: inherit;
-  font-weight: 600;
+  font-family: 'Open Sans', sans-serif;
+  font-size: inherit;
+  font-weight: 700;
   color: var(--accent-strong);
   padding: 0;
   text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color var(--transition);
 }
+
 .link-btn:hover {
   color: var(--accent);
 }

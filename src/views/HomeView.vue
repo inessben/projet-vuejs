@@ -13,7 +13,10 @@ const chargement = ref(false)
 const erreur = ref(null)
 
 watch(query, async (q) => {
-  if (!q) { filmsRecherche.value = []; return }
+  if (!q) {
+    filmsRecherche.value = []
+    return
+  }
   page.value = 1
   chargement.value = true
   erreur.value = null
@@ -33,7 +36,7 @@ useInfiniteScroll(async () => {
   try {
     const data = await searchMovies(query.value, page.value)
     filmsRecherche.value.push(...(data.Search ?? []))
-  } catch { }
+  } catch {}
 })
 
 const filmsPopulaires = ref([])
@@ -52,23 +55,18 @@ onMounted(async () => {
 
 <template>
   <section class="page home-view">
-
     <article class="panel hero">
-      <p class="eyebrow">Catalogue cinema</p>
-      <h1 class="section-title title">Bienvenue sur CineTrack</h1>
-      <p class="text-muted subtitle">
-        Cherche un film, crée ta watchlist et garde une trace de tes avis.
+      <p class="eyebrow">Catalogue cinéma</p>
+      <h1 class="hero-title">Bienvenue sur <span class="brand-accent">CineTrack</span></h1>
+      <p class="hero-subtitle text-muted">
+        Cherche un film, construis ta watchlist et garde une trace de tes avis.
       </p>
       <SearchBar v-model="query" @search="(v) => (query = v)" />
     </article>
 
     <template v-if="query">
       <p v-if="erreur" class="panel state-msg text-muted">Erreur : {{ erreur }}</p>
-      <MovieGrid
-        :films="filmsRecherche"
-        :chargement="chargement"
-        message-vide="Aucun film trouvé."
-      >
+      <MovieGrid :films="filmsRecherche" :chargement="chargement" message-vide="Aucun film trouvé.">
         <template #actions="{ movie }">
           <WatchlistButton :film="movie" />
         </template>
@@ -78,17 +76,17 @@ onMounted(async () => {
     <template v-else>
       <section class="quick-grid">
         <RouterLink to="/genre/Action" class="panel quick-card">
-          <h2>Genres</h2>
-          <p class="text-muted">Parcours les films par univers et ambiance.</p>
+          <h2 class="quick-title">Genres</h2>
+          <p class="text-muted quick-desc">Parcours les films par univers et ambiance.</p>
         </RouterLink>
         <RouterLink to="/watchlist" class="panel quick-card">
-          <h2>Watchlist</h2>
-          <p class="text-muted">Retrouve tous les films que tu veux voir.</p>
+          <h2 class="quick-title">Watchlist</h2>
+          <p class="text-muted quick-desc">Retrouve tous les films que tu veux voir.</p>
         </RouterLink>
       </section>
 
       <section class="popular-section">
-        <h2 class="section-title popular-title">Films populaires</h2>
+        <h2 class="section-title">Films populaires</h2>
         <MovieGrid
           :films="filmsPopulaires"
           :chargement="chargementPopulaires"
@@ -100,19 +98,18 @@ onMounted(async () => {
         </MovieGrid>
       </section>
     </template>
-
   </section>
 </template>
 
 <style scoped>
 .home-view {
   display: grid;
-  gap: 18px;
-  padding-bottom: 24px;
+  gap: 20px;
+  padding-bottom: 32px;
 }
 
 .hero {
-  padding: clamp(18px, 3vw, 28px);
+  padding: clamp(22px, 3vw, 36px);
   display: grid;
   gap: 14px;
 }
@@ -120,50 +117,74 @@ onMounted(async () => {
 .eyebrow {
   margin: 0;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--text-700);
-  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  font-size: 0.75rem;
   font-weight: 700;
 }
 
-.title {
+.hero-title {
   margin: 0;
-  font-size: clamp(1.7rem, 3vw, 2.5rem);
+  font-family: 'Fraunces', serif;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--text-900);
 }
 
-.subtitle {
+.brand-accent {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-subtitle {
   margin: 0;
-  max-width: 65ch;
+  max-width: 55ch;
   line-height: 1.65;
+  font-size: 0.97rem;
 }
 
 .quick-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  gap: 14px;
 }
 
 .quick-card {
   text-decoration: none;
-  padding: 16px;
-  transition: transform 180ms ease;
+  padding: 20px;
+  display: grid;
+  gap: 8px;
+  transition:
+    transform var(--transition),
+    box-shadow var(--transition);
 }
 
 .quick-card:hover {
   transform: translateY(-3px);
+  box-shadow: var(--shadow-card);
 }
 
-.quick-card h2 {
-  margin: 0 0 8px;
-  font-family: 'Fraunces', serif;
+.quick-icon {
+  font-size: 1.6rem;
+  line-height: 1;
 }
 
-.quick-card p {
+.quick-title {
   margin: 0;
+  font-family: 'Fraunces', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-900);
 }
 
-.popular-title {
-  margin-bottom: 16px;
+.quick-desc {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.5;
 }
 
 .popular-section {
@@ -174,6 +195,7 @@ onMounted(async () => {
 .state-msg {
   padding: 18px;
   margin: 0;
+  font-size: 0.92rem;
 }
 
 @media (max-width: 760px) {
