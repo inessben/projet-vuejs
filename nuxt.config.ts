@@ -4,7 +4,8 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       omdbApiKey: ''
-    }
+    },
+    modules: ['@nuxt/test-utils/module']
   },
   app: {
     head: {
