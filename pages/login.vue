@@ -109,7 +109,6 @@ async function soumettre() {
   <section class="page auth-view">
     <article class="panel auth-card">
       <div class="auth-header">
-        <img src="/logo.png" alt="CineTrack" class="auth-logo" />
         <h1 class="auth-title">
           {{ mode === 'login' ? 'Connexion' : 'Inscription' }}
         </h1>

@@ -1,3 +1,7 @@
+<script setup>
+useTheme()
+</script>
+
 <template>
   <div class="app-shell">
     <div class="app-glow app-glow-left" />
@@ -16,6 +20,7 @@
   min-height: 100vh;
   padding: 16px 0 36px;
   overflow: hidden;
+  transition: background-color var(--transition);
 }
 
 .app-main {
@@ -36,12 +41,12 @@
 .app-glow-left {
   top: -180px;
   left: -120px;
-  background: rgba(255, 122, 69, 0.24);
+  background: var(--glow-left);
 }
 
 .app-glow-right {
   top: -140px;
   right: -120px;
-  background: rgba(75, 163, 209, 0.28);
+  background: var(--glow-right);
 }
 </style>
