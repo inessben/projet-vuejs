@@ -1,14 +1,14 @@
 # CineTrack
 
-Application web cine (Nuxt 3 + Pinia) pour rechercher des films, creer une watchlist, noter les films vus et suivre ses stats de profil.
+Application web cinéma (Nuxt 3 + Pinia) pour rechercher des films, créer une watchlist, noter les films vus et suivre ses stats de profil.
 
-Projet realise par : Ines, Mariam, Thea, Ethan.
+Projet réalisé par : Ines, Mariam, Thea, Ethan.
 
 ## Installation
 
-### 1. Prerequis
+### 1. Prérequis
 
-- Node.js 18+ (recommande : 20 LTS)
+- Node.js 18+ (recommandé : 20 LTS)
 - npm
 
 ### 2. Installer le projet
@@ -19,9 +19,20 @@ cd projet-vuejs
 npm install
 ```
 
-### 3. Configurer la cle OMDb
+### 3. Récupérer une clé API OMDb
 
-Copier le fichier d'exemple et ajouter votre cle :
+C'est gratuit et ça prend 2 minutes.
+
+1. Va sur [omdbapi.com/apikey.aspx](https://www.omdbapi.com/apikey.aspx)
+2. Choisis le plan **FREE** (1000 requêtes/jour, c'est largement suffisant)
+3. Entre ton adresse mail et valide
+4. Tu reçois un mail de `omdbapi.com` avec le sujet **"API Key"** (vérifie les spams si tu ne vois rien)
+5. Dans le mail, clique sur le lien d'activation (sans ça la clé ne marche pas)
+6. Ta clé ressemble à ça : `1f4f4f3b` (8 caractères)
+
+### 4. Configurer le fichier .env
+
+Copier le fichier d'exemple et ajouter ta clé :
 
 ```bash
 cp .env.example .env
@@ -34,131 +45,125 @@ Contenu attendu dans `.env` :
 ```env
 NUXT_PUBLIC_OMDB_API_KEY=VOTRE_CLE_OMDB
 ```
-Récupérer une clé API OMDb
 
-C'est gratuit et ça prend 2 minutes.
-Va sur omdbapi.com/apikey.aspx
-Choisis le plan FREE (1000 requêtes/jour, c'est largement suffisant)
-Entre ton adresse mail et valide
-Tu reçois un mail de omdbapi.com avec le sujet "API Key" — vérifie les spams si tu vois rien
-Dans le mail, clique sur le lien d'activation (sans ça la clé marchera pas)
-Ta clé ressemble à ça : 1f4f4f3b (8 caractères)
+> Le `.env` est personnel (à ne pas partager publiquement).
 
-import.meta.env.VITE_OMDB_API_KEY;
-Si ça retourne ta clé c'est bon. Si ça retourne undefin, redémarre le serveur avec Ctrl+C puis npm run dev.
-
-### 4. Lancer en local
+### 5. Lancer en local
 
 ```bash
 npm run dev
 ```
 
-Application disponible sur : `http://localhost:3001` (ou le port affiche par Nuxt).
+Application disponible sur : `http://localhost:3001` (ou le port affiché par Nuxt).
 
-### 5. Commandes utiles
+### 6. Vérifier que la clé est bien chargée
 
-```bash
-npm run build    # build production
-npm run preview  # previsualiser le build
-npm run generate # generation statique
+Ouvre la console navigateur (`F12`) et tape :
+
+```js
+window.__NUXT__?.config?.public?.omdbApiKey
 ```
 
-## Explication Du Projet
+- Si ça retourne ta clé, c'est bon.
+- Si ça retourne `undefined`, redémarre le serveur avec `Ctrl + C` puis `npm run dev`.
+
+## Explication du projet
 
 CineTrack est une application de suivi de films.
 
-Objectif :
+Objectifs :
 - trouver rapidement un film via OMDb,
-- l'ajouter a une watchlist personnelle,
+- l'ajouter à une watchlist personnelle,
 - marquer les films vus,
-- laisser une note (etoiles) et un commentaire,
-- visualiser ses statistiques sur une page profil.
+- laisser une note (étoiles) et un commentaire,
+- visualiser des statistiques utilisateur sur la page profil.
 
-Le projet utilise :
+Stack :
 - Nuxt 3 (SPA),
 - Pinia + persistance locale,
-- API OMDb pour les donnees films,
-- un theme dark mode avec une interface responsive.
+- API OMDb,
+- Dark mode + interface responsive,
+- Qualité de code avec **ESLint** et **Prettier**.
 
-## Fonctionnalites
+## Fonctionnalités
 
 - Recherche de films en direct avec infinite scroll.
 - Section "films populaires" sur l'accueil.
 - Navigation par genres (`/genre/[id]`).
-- Fiche film detaillee (`/movie/[id]`) avec casting.
+- Fiche film détaillée (`/movie/[id]`) avec casting.
 - Ajout / retrait de la watchlist.
 - Marquer "vu / non vu".
 - Avis utilisateur : note + commentaire.
-- Modification d'un avis deja enregistre.
+- Modification d'un avis déjà enregistré.
 - Auth locale (inscription / connexion) avec session persistante.
-- Profil utilisateur (films en liste, films vus, note moyenne, genre favori, progression) dynamique.
+- Profil utilisateur dynamique (films en liste, films vus, note moyenne, genre favori, progression).
 - Dark mode natif + design responsive (desktop, tablette, mobile).
--tests unitaire pour AppNavBar.vue
 
-### Tests unitaires
+## Tests unitaires
 
 Le projet inclut des tests unitaires avec **Vitest** et **@vue/test-utils**.
 
-Composants actuellement testés :
+Composants testés :
 - `AppNavbar` (rendu, session utilisateur, logout, thème),
 - `SearchBar` (accessibilité, saisie, événements),
-- `WatchlistButton` (ajout/retrait watchlist, cas d’erreur API).
+- `WatchlistButton` (ajout/retrait watchlist, gestion erreur API).
 
 Lancer les tests :
+
 ```bash
 npm run test
+```
+
 ## Screens
 
-### 1) Accueil
-![Accueil](docs/screens/screen-09.png)
-
-### 2) Catalogue / Films populaires
-![Films populaires](docs/screens/screen-02.png)
-
-### 3) Page Genre
-![Genre](docs/screens/screen-03.png)
-
-### 4) Connexion
+### 1) Connexion
 ![Connexion](docs/screens/screen-01.png)
 
-### 5) Inscription
+### 2) Inscription
 ![Inscription](docs/screens/screen-02.png)
-![Inscription](docs/screens/screen-07.png)
-![Inscription](docs/screens/screen-08.png)
 
-### 6) Profil
+### 3) Profil
 ![Profil](docs/screens/screen-03.png)
 
-### 7) Watchlist
+### 4) Watchlist
 ![Watchlist](docs/screens/screen-04.png)
 
-### 8) Fiche Film + Avis
+### 5) Fiche film + avis
 ![Fiche film](docs/screens/screen-05.png)
+
+### 6) Validation inscription (format username)
+![Validation username](docs/screens/screen-06.png)
+
+### 7) Validation inscription (email + mot de passe)
+![Validation email mdp](docs/screens/screen-07.png)
+
+### 8) Validation inscription (username déjà pris)
+![Validation username pris](docs/screens/screen-08.png)
 
 ### 9) Accueil (version finale)
 ![Accueil final](docs/screens/screen-09.png)
 
 ### 10) Grille des films populaires
-![Grille populaires](docs/screens/screen-10.png)
+![Films populaires](docs/screens/screen-10.png)
 
-### 11) Genre Horror
-![Genre horror](docs/screens/screen-11.png)
+### 11) Page genre (Horror)
+![Genre Horror](docs/screens/screen-11.png)
 
-## Limites / Ameliorations Possibles
+## Limites / Améliorations possibles
 
 ### Limites actuelles
 
-- Auth locale simplifiee (pas d'auth serveur complete type JWT/session back robuste).
-- Donnees utilisateurs stockees localement pour le projet (pas de base SQL/NoSQL distante).
-- Dependance au quota OMDb (plan gratuit limite).
+- Auth locale simplifiée (pas de backend auth complet type JWT/session robuste).
+- Données utilisateurs stockées localement (pas de base distante).
+- Dépendance au quota OMDb (plan gratuit limité).
+- Couverture tests encore partielle.
 
+### Améliorations possibles
 
-### Ameliorations possibles
-
-- Ajouter plus de tests.
-- Ajouter un vrai backend + base de donnees (API securisee).
-- Ajouter des filtres avances (annee, note IMDb, duree, etc.).
-- Ajouter pagination/virtualisation plus poussee pour gros volumes.
-- Ajouter page "favoris" separee de la watchlist.
-- Ajouter mode hors-ligne (PWA) et cache intelligent.
-- Ajouter i18n (FR/EN) et options d'accessibilite avancees.
+- Ajouter plus de tests (autres composants/pages, e2e).
+- Ajouter un vrai backend + base de données.
+- Ajouter des filtres avancés (année, note IMDb, durée, etc.).
+- Améliorer pagination/virtualisation pour gros volumes.
+- Ajouter une section favoris séparée de la watchlist.
+- Ajouter mode hors-ligne (PWA) + cache intelligent.
+- Ajouter i18n (FR/EN) et options d'accessibilité avancées.
