@@ -63,14 +63,14 @@ function seDeconnecter() {
       </div>
       <div class="identity-actions">
         <button class="btn btn-secondary" @click="ouvrirEdition">Modifier email</button>
-        <button class="btn btn-danger" @click="seDeconnecter">Se déconnecter</button>
+        <button class="btn btn-danger" @click="seDeconnecter">Se deconnecter</button>
       </div>
     </article>
 
     <Transition name="slide">
       <article v-if="modeEdition" class="panel edit-card">
         <h2 class="edit-title">Modifier l'email</h2>
-        <p class="text-muted edit-note">Le nom d'utilisateur ne peut pas être changé.</p>
+        <p class="text-muted edit-note">Le nom d'utilisateur ne peut pas etre change.</p>
         <form class="edit-form" @submit.prevent="enregistrerEmail">
           <div class="field">
             <label class="field-label" for="edit-email">Nouvel email</label>
@@ -107,12 +107,12 @@ function seDeconnecter() {
       <article class="panel stat-card">
         <p class="stat-label">Note moyenne</p>
         <p class="stat-value">
-          {{ stats.moyenne ?? '—' }}<span v-if="stats.moyenne" class="stat-unit">/5</span>
+          {{ stats.moyenne ?? '-' }}<span v-if="stats.moyenne" class="stat-unit">/5</span>
         </p>
       </article>
       <article class="panel stat-card">
         <p class="stat-label">Genre favori</p>
-        <p class="stat-value genre-val">{{ stats.genreFavori ?? '—' }}</p>
+        <p class="stat-value genre-val">{{ stats.genreFavori ?? '-' }}</p>
       </article>
     </section>
 
@@ -179,12 +179,12 @@ function seDeconnecter() {
 
 .btn-danger {
   color: var(--danger);
-  background: rgba(255, 255, 255, 0.9);
+  background: var(--button-danger-soft-bg);
   border-color: rgba(211, 72, 72, 0.3);
 }
 
 .btn-danger:hover {
-  background: var(--danger);
+  background: var(--button-danger-soft-hover-bg);
   color: #fff;
   border-color: var(--danger);
   transform: translateY(-1px);

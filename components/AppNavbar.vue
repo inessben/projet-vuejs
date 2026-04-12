@@ -3,6 +3,7 @@ import { useUserStore } from '~/stores/user'
 
 const userStore = useUserStore()
 const router = useRouter()
+const { estSombre, basculerTheme } = useTheme()
 
 function seDeconnecter() {
   userStore.fermerSession()
@@ -26,19 +27,29 @@ function seDeconnecter() {
         </li>
       </ul>
 
-      <div v-if="userStore.estConnecte" class="user-zone">
-        <NuxtLink to="/profile" class="user-pill">
-          <span class="user-avatar">{{ userStore.initiales }}</span>
-          <span class="user-nom">@{{ userStore.username }}</span>
-        </NuxtLink>
-        <button class="btn btn-secondary deco-btn" aria-label="Se déconnecter" @click="seDeconnecter">
-          <i class="fas fa-sign-out-alt" />
+      <div class="user-zone">
+        <button
+          class="btn btn-secondary theme-btn"
+          :aria-label="estSombre ? 'Activer le mode clair' : 'Activer le mode sombre'"
+          @click="basculerTheme"
+        >
+          <i :class="estSombre ? 'fas fa-sun' : 'fas fa-moon'" />
         </button>
-      </div>
 
-      <NuxtLink v-else to="/login" class="btn btn-primary login-btn">
-        Se connecter
-      </NuxtLink>
+        <template v-if="userStore.estConnecte">
+          <NuxtLink to="/profile" class="user-pill">
+            <span class="user-avatar">{{ userStore.initiales }}</span>
+            <span class="user-nom">@{{ userStore.username }}</span>
+          </NuxtLink>
+          <button class="btn btn-secondary deco-btn" aria-label="Se deconnecter" @click="seDeconnecter">
+            <i class="fas fa-sign-out-alt" />
+          </button>
+        </template>
+
+        <NuxtLink v-else to="/login" class="btn btn-primary login-btn">
+          Se connecter
+        </NuxtLink>
+      </div>
     </nav>
   </header>
 </template>
@@ -100,7 +111,7 @@ function seDeconnecter() {
 
 .nav-link:hover {
   color: var(--text-900);
-  background: rgba(0, 0, 0, 0.05);
+  background: var(--nav-hover);
 }
 
 .nav-link.router-link-active {
@@ -123,14 +134,14 @@ function seDeconnecter() {
   padding: 5px 12px 5px 5px;
   border-radius: 999px;
   border: 1.5px solid var(--line);
-  background: rgba(255, 255, 255, 0.85);
+  background: var(--surface-muted);
   transition: background-color var(--transition), border-color var(--transition), box-shadow var(--transition);
 }
 
 .user-pill:hover {
-  background: #fff;
-  border-color: rgba(22, 32, 45, 0.18);
-  box-shadow: 0 4px 12px rgba(13, 23, 35, 0.08);
+  background: var(--surface-strong);
+  border-color: var(--line-strong);
+  box-shadow: var(--shadow-soft);
 }
 
 .user-avatar {
@@ -158,9 +169,17 @@ function seDeconnecter() {
   white-space: nowrap;
 }
 
-.deco-btn {
+.deco-btn,
+.theme-btn {
   padding: 7px 11px;
   font-size: 0.85rem;
+}
+
+.theme-btn {
+  min-width: 40px;
+}
+
+.deco-btn {
   color: var(--text-700);
 }
 
@@ -198,10 +217,6 @@ function seDeconnecter() {
   }
 
   .user-zone {
-    margin-left: auto;
-  }
-
-  .login-btn {
     margin-left: auto;
   }
 }
