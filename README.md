@@ -1,175 +1,164 @@
-# CineTrack 🎬
+# CineTrack
 
-Projet Vue.js — App de watchlist de films — on cherche des films, on les ajoute à sa liste, on note ceux qu'on a vus. Les données viennent de l'API OMDb (gratuite).
+Application web cine (Nuxt 3 + Pinia) pour rechercher des films, creer une watchlist, noter les films vus et suivre ses stats de profil.
 
-Groupe : Iness · Mariam · Théa · Ethan
+Projet realise par : Ines, Mariam, Thea, Ethan.
 
----
+## Installation
 
-## C'est quoi ?
+### 1. Prerequis
 
-Un Letterboxd simplifié. T'ajoutes des films à ta liste, tu marques ceux que t'as vus, tu laisses une note et un commentaire. La watchlist est sauvegardée dans le localStorage donc elle disparaît pas si tu fermes le navigateur.
+- Node.js 18+ (recommande : 20 LTS)
+- npm
 
-On a aussi une page de recherche avec des filtres, une fiche détaillée par film, et une page profil avec quelques stats (films vus, note moyenne, genre préféré).
-
----
-
-## Stack
-
-Vue 3 + Composition API, Vue Router 4, Pinia (avec persistance localStorage), Vite, ESLint + Prettier.
-
----
-
-## Lancer le projet
-
-### 1. Récupérer une clé API OMDb
-
-C'est gratuit et ça prend 2 minutes.
-
-1. Va sur [omdbapi.com/apikey.aspx](https://www.omdbapi.com/apikey.aspx)
-2. Choisis le plan **FREE** (1000 requêtes/jour, c'est largement suffisant)
-3. Entre ton adresse mail et valide
-4. Tu reçois un mail de `omdbapi.com` avec le sujet **"API Key"** — vérifie les spams si tu vois rien
-5. Dans le mail, clique sur le **lien d'activation** (sans ça la clé marchera pas)
-6. Ta clé ressemble à ça : `1f4f4f3b` (8 caractères)
-
-### 2. Cloner et installer
-
-````bash
+### 2. Installer le projet
 
 ```bash
 git clone https://github.com/inessben/projet-vuejs.git
-cd projet-vue
+cd projet-vuejs
 npm install
-#ou
-npm install -D vite @vitejs/plugin-vue eslint eslint-plugin-vue
-
-
-npm run dev
-
-npm run lint      # corrige les erreurs ESLint
-npm run format    # formate tout le code avec Prettier
-````
-
 ```
 
-### 3. Créer ton fichier .env
+### 3. Configurer la cle OMDb
 
-Crée un fichier `.env` à la racine du projet (là où y'a le `package.json`) et colle ça dedans :
-
-```
-
-VITE_OMDB_API_KEY=ta_clé_ici
-
-````
-
-
-> ⚠️ Le `.env` est dans le `.gitignore` — chacun crée le sien avec sa propre clé. On le commit jamais, on l'envoie pas sur Discord non plus.
-
-### 4. Lancer
+Copier le fichier d'exemple et ajouter votre cle :
 
 ```bash
-npm run dev
-# → http://localhost:5173
-````
+cp .env.example .env
+# ou en PowerShell :
+Copy-Item .env.example .env
+```
 
-Pour vérifier que ta clé est bien chargée, ouvre la console du navigateur (`F12`) et tape :
+Contenu attendu dans `.env` :
 
-```js
+```env
+NUXT_PUBLIC_OMDB_API_KEY=VOTRE_CLE_OMDB
+```
+Récupérer une clé API OMDb
+
+C'est gratuit et ça prend 2 minutes.
+Va sur omdbapi.com/apikey.aspx
+Choisis le plan FREE (1000 requêtes/jour, c'est largement suffisant)
+Entre ton adresse mail et valide
+Tu reçois un mail de omdbapi.com avec le sujet "API Key" — vérifie les spams si tu vois rien
+Dans le mail, clique sur le lien d'activation (sans ça la clé marchera pas)
+Ta clé ressemble à ça : 1f4f4f3b (8 caractères)
+
 import.meta.env.VITE_OMDB_API_KEY;
-```
+Si ça retourne ta clé c'est bon. Si ça retourne undefin, redémarre le serveur avec Ctrl+C puis npm run dev.
 
-Si ça retourne ta clé c'est bon. Si ça retourne `undefined`, redémarre le serveur avec `Ctrl+C` puis `npm run dev`.
-
-### Autres commandes
+### 4. Lancer en local
 
 ```bash
-npm run build     # prod
-npm run preview   # tester le build
+npm run dev
 ```
 
----
+Application disponible sur : `http://localhost:3001` (ou le port affiche par Nuxt).
 
-## Structure
+### 5. Commandes utiles
 
-```
-src/
-├── components/    → les composants réutilisables
-├── views/         → une view par page/route
-├── stores/        → les 3 stores Pinia (movies, watchlist, user)
-├── composables/   → useDebounce, useToast, useMovieFetch, useInfiniteScroll
-├── directives/    → v-lazy-image
-├── services/      → tmdb.js, tous les appels API au même endroit
-└── router/        → index.js
+```bash
+npm run build    # build production
+npm run preview  # previsualiser le build
+npm run generate # generation statique
 ```
 
----
+## Explication Du Projet
 
-## Qui fait quoi
+CineTrack est une application de suivi de films.
 
-On a réparti pour que chacun touche à toutes les notions Vue du cours. Personne fait que du CSS pendant qu'un autre fait toute la logique.
+Objectif :
+- trouver rapidement un film via OMDb,
+- l'ajouter a une watchlist personnelle,
+- marquer les films vus,
+- laisser une note (etoiles) et un commentaire,
+- visualiser ses statistiques sur une page profil.
 
----
+Le projet utilise :
+- Nuxt 3 (SPA),
+- Pinia + persistance locale,
+- API OMDb pour les donnees films,
+- un theme dark mode avec une interface responsive.
 
-**Iness — Recherche & Home**
+## Fonctionnalites
 
-`SearchBar.vue`, `FilterPanel.vue`, `GenreBadge.vue`, `HomeView.vue` et `SearchView.vue`.
+- Recherche de films en direct avec infinite scroll.
+- Section "films populaires" sur l'accueil.
+- Navigation par genres (`/genre/[id]`).
+- Fiche film detaillee (`/movie/[id]`) avec casting.
+- Ajout / retrait de la watchlist.
+- Marquer "vu / non vu".
+- Avis utilisateur : note + commentaire.
+- Modification d'un avis deja enregistre.
+- Auth locale (inscription / connexion) avec session persistante.
+- Profil utilisateur (films en liste, films vus, note moyenne, genre favori, progression) dynamique.
+- Dark mode natif + design responsive (desktop, tablette, mobile).
+-tests unitaire pour AppNavBar.vue
 
-Côté notions Vue : `defineModel()` sur la SearchBar, watcher deep sur les filtres (pour relancer la recherche automatiquement quand un filtre change), le composable `useDebounce` pour pas flood l'API à chaque lettre, et les appels API search.
+### Tests unitaires
 
----
+Le projet inclut des tests unitaires avec **Vitest** et **@vue/test-utils**.
 
-**Mariam — Fiche film & Casting**
+Composants actuellement testés :
+- `AppNavbar` (rendu, session utilisateur, logout, thème),
+- `SearchBar` (accessibilité, saisie, événements),
+- `WatchlistButton` (ajout/retrait watchlist, cas d’erreur API).
 
-`MovieCard.vue`, `HeroSection.vue`, `CastCarousel.vue`, `MovieDetailView.vue` et `PersonDetailView.vue`.
+Lancer les tests :
+```bash
+npm run test
+## Screens
 
-Côté notions Vue : slots nommés sur HeroSection (`#title`, `#actions`, `#meta`), scoped slot sur CastCarousel, le composable `useMovieFetch` qui watch `route.params.id` pour recharger quand on navigue entre deux films, et les appels API détails film.
+### 1) Accueil
+![Accueil](docs/screens/screen-09.png)
 
----
+### 2) Catalogue / Films populaires
+![Films populaires](docs/screens/screen-02.png)
 
-**Théa — Watchlist & Formulaires**
+### 3) Page Genre
+![Genre](docs/screens/screen-03.png)
 
-`WatchlistButton.vue`, `MovieReviewForm.vue`, `RatingStars.vue`, `WatchlistView.vue` et le store watchlist.
+### 4) Connexion
+![Connexion](docs/screens/screen-01.png)
 
-Côté notions Vue : `defineModel()` sur RatingStars, formulaire avec validation complète (note obligatoire, commentaire 20-500 chars, messages d'erreur inline), computed `filteredAndSortedWatchlist` qui combine filtre + tri + recherche, store Pinia persisté, et lazy loading du formulaire d'avis.
+### 5) Inscription
+![Inscription](docs/screens/screen-02.png)
+![Inscription](docs/screens/screen-07.png)
+![Inscription](docs/screens/screen-08.png)
 
----
+### 6) Profil
+![Profil](docs/screens/screen-03.png)
 
-**Ethan — Architecture, Router & Profil**
+### 7) Watchlist
+![Watchlist](docs/screens/screen-04.png)
 
-`AppNavbar.vue`, `MovieGrid.vue`, `ToastNotification.vue`, toute la config du router, `ProfileView.vue`, les stores movies et user, et la directive `v-lazy-image`.
+### 8) Fiche Film + Avis
+![Fiche film](docs/screens/screen-05.png)
 
-Côté notions Vue : lazy loading des routes, computed `watchlistStats` dans ProfileView, composable `useToast` global, directive custom avec IntersectionObserver, et les deux stores Pinia movies/user.
+### 9) Accueil (version finale)
+![Accueil final](docs/screens/screen-09.png)
 
----
+### 10) Grille des films populaires
+![Grille populaires](docs/screens/screen-10.png)
 
-## Routes
+### 11) Genre Horror
+![Genre horror](docs/screens/screen-11.png)
 
-```
-/             → Home
-/search       → Recherche + filtres
-/movie/:id    → Fiche film  (dynamique)
-/person/:id   → Fiche acteur  (dynamique)
-/watchlist    → Ta liste
-/genre/:id    → Films par genre  (dynamique)
-/profile      → Tes stats
-/*            → 404
-```
+## Limites / Ameliorations Possibles
 
-## Planning
+### Limites actuelles
 
-Sprint 1 (25-29 mars) — setup, home avec vrais films, watchlist de base
-Sprint 2 (30 mars - 6 avril) — toutes les pages, tous les critères du sujet
-Sprint 3 (7-12 avril) — polish, build, zip MyGES
+- Auth locale simplifiee (pas d'auth serveur complete type JWT/session back robuste).
+- Donnees utilisateurs stockees localement pour le projet (pas de base SQL/NoSQL distante).
+- Dependance au quota OMDb (plan gratuit limite).
 
-**Deadline : 13 avril 2026**
 
----
+### Ameliorations possibles
 
-## Ce qu'on a pas fait
-
-- Auth (pas de vrai compte utilisateur)
-- Tests unitaires
-- PWA / mode offline
-
----
+- Ajouter plus de tests.
+- Ajouter un vrai backend + base de donnees (API securisee).
+- Ajouter des filtres avances (annee, note IMDb, duree, etc.).
+- Ajouter pagination/virtualisation plus poussee pour gros volumes.
+- Ajouter page "favoris" separee de la watchlist.
+- Ajouter mode hors-ligne (PWA) et cache intelligent.
+- Ajouter i18n (FR/EN) et options d'accessibilite avancees.
