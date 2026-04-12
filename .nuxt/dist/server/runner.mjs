@@ -1,1 +1,0 @@
-export { default } from "file:///C:/Users/iness/e4-esgi/projet-vue/node_modules/@nuxt/vite-builder/dist/vite-node-runner.mjs"
