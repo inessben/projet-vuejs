@@ -116,17 +116,17 @@ useInfiniteScroll(async () => {
   padding: 6px 14px;
   border-radius: 999px;
   border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.7);
-  color: var(--text-700);
+  background: var(--button-secondary-bg);
+  color: var(--text-900);
   font: inherit;
   font-size: 0.88rem;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   transition: background-color 160ms ease, color 160ms ease, border-color 160ms ease;
 }
 
 .pill:hover {
-  background: #fff;
+  background: var(--button-secondary-hover);
   color: var(--text-900);
 }
 
